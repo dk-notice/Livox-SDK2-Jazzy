@@ -22,12 +22,13 @@
 // SOFTWARE.
 //
 
-#ifndef LIVOX_FILE_MANAGER_
-#define LIVOX_FILE_MANAGER_
+#pragma once
 
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
+#include <cstdint>
 
 namespace livox {
 namespace lidar {
@@ -46,5 +47,3 @@ bool IsDirectoryExits(std::string dir);
 
 } // namespace lidar
 }  // namespace livox
-
-#endif  // LIVOX_FILE_MANAGER_

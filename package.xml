@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>livox_sdk2</name>
+  <version>2.0.0</version> <!-- Use the SDK's version if known, otherwise placeholder -->
+  <description>Livox SDK v2 core library</description>
+  <maintainer email="dev@livoxtech.com">Livox</maintainer> <!-- Placeholder -->
+  <license>See LICENSE.txt</license> <!-- Assuming MIT based on driver -->
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Add dependencies needed by the SDK core library itself -->
+  <!-- Example: <depend>rclcpp</depend> if it uses ROS things, unlikely -->
+  <!-- From CMakeLists.txt: likely needs Threads -->
+  <depend>libpthread-stubs</depend> <!-- System dependency for pthreads -->
+
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package> 

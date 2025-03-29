@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.8)
 
-set(SDK_LIBRARY_STATIC livox_lidar_sdk_static)
-set(SDK_LIBRARY_SHARED livox_lidar_sdk_shared)
+set(SDK_CORE_TARGET sdk_core)
 
-add_library(${SDK_LIBRARY_STATIC} STATIC "")
-add_library(${SDK_LIBRARY_SHARED} SHARED "")
+add_library(${SDK_CORE_TARGET} SHARED "")
 
 set(LIVOX_SDK_MAJOR_VERSION "0")
 set(LIVOX_SDK_MINOR_VERSION "0")
@@ -17,49 +15,32 @@ set(LIVOX_API_HEADER
         ../include/livox_lidar_cfg.h
         )
 
-set_target_properties(${SDK_LIBRARY_STATIC} #${SDK_LIBRARY_SHARED} 
-        PROPERTIES
-        PUBLIC_HEADER "${LIVOX_API_HEADER}"
-        )
-
 if(WIN32)
   set(PLATFORM win)
 else(WIN32)
   set(PLATFORM unix)
 endif (WIN32)
 
-target_compile_options(${SDK_LIBRARY_STATIC}
-        PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>#-Wno-c++11-long-long>
-        PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
-        PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
-        )
-
-target_compile_options(${SDK_LIBRARY_SHARED}
+target_compile_options(${SDK_CORE_TARGET}
         PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>#-Wno-c++11-long-long>
         PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
         PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-unknown-pragmas -Wall -Werror -Wno-c++11-long-long>
         )
 
 set(LIVOX_PRIVATE_INCLUDE_DIR 
-        ../3rdparty 
-        ../3rdparty/spdlog 
-        .
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty 
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/spdlog 
+        ${CMAKE_CURRENT_SOURCE_DIR}
         )
 set(LIVOX_PUBLIC_INCLUDE_DIR 
-        ../include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include
         )
 
 target_include_directories(
-        ${SDK_LIBRARY_STATIC}
+        ${SDK_CORE_TARGET}
         PUBLIC
-        ${LIVOX_PUBLIC_INCLUDE_DIR}
-        PRIVATE
-        ${LIVOX_PRIVATE_INCLUDE_DIR}
-        )        
-target_include_directories(
-        ${SDK_LIBRARY_SHARED}
-        PUBLIC
-        ${LIVOX_PUBLIC_INCLUDE_DIR}
+        "$<BUILD_INTERFACE:${LIVOX_PUBLIC_INCLUDE_DIR}>"
+        "$<INSTALL_INTERFACE:include>"
         PRIVATE
         ${LIVOX_PRIVATE_INCLUDE_DIR}
         )
@@ -128,16 +109,23 @@ set(LIVOX_SOURCES
         ${DEBUG_POINT_CLOUD_HANDLER_SOURCES}
         )
 
-target_sources(${SDK_LIBRARY_STATIC}
-        PRIVATE
-        ${LIVOX_SOURCES}
-        )
-target_sources(${SDK_LIBRARY_SHARED}
+target_sources(${SDK_CORE_TARGET}
         PRIVATE
         ${LIVOX_SOURCES}
         )
 
-install(TARGETS ${SDK_LIBRARY_STATIC} ${SDK_LIBRARY_SHARED}
-        PUBLIC_HEADER DESTINATION include
+install(DIRECTORY ${LIVOX_PUBLIC_INCLUDE_DIR}/
+        DESTINATION include)
+
+install(TARGETS ${SDK_CORE_TARGET}
+        EXPORT ${SDK_CORE_TARGET}_targets
         ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        )
+
+ament_export_include_directories(include)
+ament_export_targets(${SDK_CORE_TARGET}_targets
+  NAMESPACE livox_sdk2::
+  HAS_LIBRARY_TARGET
+)

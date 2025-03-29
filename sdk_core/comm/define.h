@@ -22,9 +22,9 @@
 // SOFTWARE.
 //
 
-#ifndef LIVOX_DEFINE_H_
-#define LIVOX_DEFINE_H_
+#pragma once
 
+#include <cstdint>
 #include <stdio.h>
 #include <string>
 #include <memory>
@@ -365,5 +365,3 @@ typedef void(*LivoxLidarRequestFirmwareInfoCallback)(livox_status status,
 
 } // namespace lidar
 } // namespace livox
-
-# endif // DEFINE_H_
